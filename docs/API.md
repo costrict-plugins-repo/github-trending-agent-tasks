@@ -1,0 +1,138 @@
+# API Reference
+
+agent-tasks exposes three transport layers: MCP (stdio), REST (HTTP), and WebSocket (real-time events).
+
+## MCP Tools (8)
+
+agent-tasks consolidates everything into 8 action-based tools to keep per-prompt overhead minimal.
+
+### Task CRUD
+
+| Tool          | Description                                                                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `task_create` | Create a pipeline task (title, description, priority, project, tags, parent_id, assign_to, stage)                                                   |
+| `task_get`    | Get a task with optional `include: ["subtasks", "artifacts", "comments"]`. Replaces the former `task_get_subtasks/artifacts/comments` family.       |
+| `task_list`   | List/search tasks (filters: query, status, stage, project, assign_to, collaborator, root_only, parent_id, tags, pagination)                         |
+| `task_update` | Update metadata (title, description, priority, project, tags, assign_to). Inline `dependency: { action, depends_on, relationship }` for add/remove. |
+| `task_delete` | Delete a task with cascading cleanup of subtasks, comments, artifacts                                                                               |
+
+### Lifecycle
+
+| Tool         | Description                                                                                                                                                                                                                                                                                                                            |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `task_stage` | All lifecycle transitions via `action`: `claim` (assign to caller, advance from backlog), `assign` (assign to caller, stage unchanged — for pipelines whose first stage is itself a do-work stage), `advance` (next stage or specific via `stage`), `regress`, `complete`, `fail`, `cancel`. Optional `comment` and `result`/`reason`. |
+
+### Artifacts
+
+| Tool            | Description                                                                                                                                                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `task_artifact` | All artifact operations: attach a `general` document, record a `decision` (chose/over/because), capture a `learning` (auto-propagated to siblings on completion), or post a threaded `comment`. |
+
+### Configuration & utilities
+
+| Tool          | Description                                                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `task_config` | Configuration via `action`: `pipeline` (get/set stages and gates), `session` (set agent identity), `cleanup` (retention/stale agents), `rules` (generate IDE rules) |
+
+### Stage gates: confidence threshold and per-stage instructions
+
+`GateConfig` (set per-project via `task_config(action: "pipeline", project, gate_config)`) supports two extra fields beyond the existing `require_comment` / `require_artifact` / `gates`:
+
+- **`min_confidence_for_claim`** (number, 0–100, optional) — Before a `task_stage(action: "claim")` succeeds, the task's title and description are scored by a deterministic heuristic (`scoreTaskConfidence`). If the score is below this threshold, the claim is rejected with a `ValidationError` listing what is missing (e.g. _"Title has only 1 word"_, _"No file path referenced"_, _"No acceptance language"_). No LLM calls — purely structural checks. Omit/null/0 to disable. Backward-compatible: existing projects without a gate are unaffected.
+- **`stage_instructions`** (`Record<stage, string>`, optional) — Per-stage prompt text surfaced to agents on `task_stage(action: "claim" | "advance")`. When set, the JSON returned by those calls includes a `stage_instructions` field with the string for the new stage. Lets a project author one-time guidance ("at 'spec' stage, write the acceptance criteria as a checklist") without each agent re-deriving it from CLAUDE.md.
+
+Example `gate_config`:
+
+```json
+{
+  "min_confidence_for_claim": 50,
+  "stage_instructions": {
+    "spec": "Write the acceptance criteria as a checklist before advancing.",
+    "plan": "List the files you intend to touch and any new dependencies.",
+    "test": "Run npm test and attach the output as an artifact."
+  }
+}
+```
+
+---
+
+## REST API (19 endpoints)
+
+All endpoints return JSON. Loopback only: foreign `Host`/`Origin` headers get 403, request bodies must be `application/json`, no wildcard CORS. The server runs on port 3422 by default.
+
+### Read endpoints
+
+| Method | Path                          | Description                                                                                                     |
+| ------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/health`                     | Health check with version, uptime, and task count                                                               |
+| `GET`  | `/api/tasks`                  | List tasks (query params: `status`, `stage`, `project`, `assigned_to`, `root_only`, `tags`, `limit`, `offset`)  |
+| `GET`  | `/api/tasks/:id`              | Get a single task by ID                                                                                         |
+| `GET`  | `/api/tasks/:id/subtasks`     | Get subtasks of a parent task                                                                                   |
+| `GET`  | `/api/tasks/:id/artifacts`    | Get artifacts (query: `stage`)                                                                                  |
+| `GET`  | `/api/tasks/:id/comments`     | Get comments                                                                                                    |
+| `GET`  | `/api/tasks/:id/dependencies` | Get dependencies for a task                                                                                     |
+| `GET`  | `/api/dependencies`           | Get all dependencies across all tasks                                                                           |
+| `GET`  | `/api/pipeline`               | Get pipeline stage configuration (query: `project`)                                                             |
+| `GET`  | `/api/overview`               | Full state dump (tasks, dependencies, artifact counts, comment counts, subtask progress, collaborators, stages) |
+| `GET`  | `/api/agents`                 | Online agents (proxied from agent-comm)                                                                         |
+| `GET`  | `/api/search?q=`              | Full-text search across tasks                                                                                   |
+
+`tags` is AND-mode — a task must carry every tag listed. Repeat the parameter once per tag (`?tags=okr:H1&tags=iter:H1`); it is not comma-separated, since a tag may itself contain a comma.
+
+### Write endpoints
+
+| Method | Path                      | Description                                          |
+| ------ | ------------------------- | ---------------------------------------------------- |
+| `POST` | `/api/tasks`              | Create a new task                                    |
+| `PUT`  | `/api/tasks/:id`          | Update task fields                                   |
+| `PUT`  | `/api/tasks/:id/stage`    | Change stage (advance or regress)                    |
+| `POST` | `/api/tasks/:id/comments` | Add a comment to a task                              |
+| `POST` | `/api/cleanup`            | Trigger manual cleanup (body: `{ "maxAgeDays": 7 }`) |
+
+### Authentication
+
+The REST API is **unauthenticated**. It is designed for localhost use between trusted agents.
+
+### Error responses
+
+```json
+{
+  "error": "Description of the error"
+}
+```
+
+| Status | Meaning                                     |
+| ------ | ------------------------------------------- |
+| 400    | Bad request (missing params, invalid input) |
+| 404    | Entity not found                            |
+| 409    | Conflict (e.g. dependency cycle)            |
+| 422    | Input validation failure                    |
+| 500    | Internal server error                       |
+
+---
+
+## WebSocket
+
+Connect to `ws://localhost:3422` for real-time events.
+
+### Connection lifecycle
+
+1. **On connect:** receives a full state snapshot (`type: "state"`) containing tasks, dependencies, pipeline stages, artifact counts, comment counts, `lastActivityAt`, subtask progress, and collaborators
+2. **State deltas:** when a database fingerprint changes, the server sends a `state` message with the current changed category data; agent-tasks supplies the dashboard state fields together so task/comment/artifact activity stays consistent
+3. **Polling:** the server polls SQLite every 2 seconds to detect cross-process changes (e.g., tasks created via MCP in another terminal)
+
+`lastActivityAt` is an object keyed by task ID. Each value is the newest UTC
+timestamp among the task's `updated_at`, comment `created_at`, and artifact
+`created_at` values. The dashboard's `Live` filter accepts values younger than
+30 minutes using a strict `< 30 minutes` comparison; missing, invalid, and
+future timestamps do not match. The selected Live state is persisted in the
+browser's `agent-tasks-filters` preference and reevaluated when a state message
+arrives.
+
+### Event types
+
+- `state` — full snapshot or database-change delta
+
+### Cross-process sync
+
+Because MCP servers run as separate stdio processes, the WebSocket server polls the SQLite database every 2 seconds to detect changes made by other processes. This ensures the dashboard stays in sync even when tasks are modified via MCP tools in separate Claude Code sessions.

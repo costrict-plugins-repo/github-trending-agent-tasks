@@ -1,0 +1,374 @@
+{
+  "generated_at": "2026-04-09T11:40:33.302Z",
+  "scenarios": [
+    {
+      "scenario": "dep-aware-mgmt",
+      "description": "8 tasks in a real DAG (user profile API build). Tests the DEPENDENCIES feature: manager questions about who's blocked on whom, what's unblockable now, critical path, etc.",
+      "n_runs": 2,
+      "naive": [
+        {
+          "condition": "naive",
+          "wall_seconds": 23.223,
+          "cost_usd": 0.15691625,
+          "tokens": 713,
+          "total_score": 1,
+          "max_score": 10,
+          "per_question": [
+            {
+              "id": 1,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 2,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 3,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 3,
+              "answer": "No — only a draft of src/types.ts exists and no other source files, endpoints, or tests are present, so integration tests have nothing to test against yet.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 4,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 3,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 5,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 6,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 7,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 8,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 9,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 10,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 5,
+              "reason": "no answer or \"cannot determine\""
+            }
+          ]
+        },
+        {
+          "condition": "naive",
+          "wall_seconds": 23.685,
+          "cost_usd": 0.1514735,
+          "tokens": 471,
+          "total_score": 0,
+          "max_score": 10,
+          "per_question": [
+            {
+              "id": 1,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 2,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 3,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 3,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 4,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 3,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 5,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 6,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 7,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 8,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 1,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 9,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 2,
+              "reason": "no answer or \"cannot determine\""
+            },
+            {
+              "id": 10,
+              "answer": "cannot determine from available information.",
+              "score": 0,
+              "matched_groups": 0,
+              "total_groups": 5,
+              "reason": "no answer or \"cannot determine\""
+            }
+          ]
+        }
+      ],
+      "agent-tasks": [
+        {
+          "condition": "agent-tasks",
+          "wall_seconds": 41.366,
+          "cost_usd": 0.42603225,
+          "tokens": 2138,
+          "total_score": 8.5,
+          "max_score": 10,
+          "per_question": [
+            {
+              "id": 1,
+              "answer": "Tasks 4/5/6 (GET, PUT, DELETE endpoints) are blocked on task 3 (Implement User type); tasks 7 (integration tests) and 8 (API docs) are blocked on tasks 4, 5, and 6.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 2,
+              "answer": "Tasks 4, 5, and 6 (GET, PUT, DELETE /user/:id endpoints) would immediately become claimable, since task 3 is their only remaining blocker.",
+              "score": 0,
+              "matched_groups": 1,
+              "total_groups": 3,
+              "reason": "matched 1 of 3 groups"
+            },
+            {
+              "id": 3,
+              "answer": "No — task 7 is blocked by tasks 4, 5, and 6, none of which are done yet (and they themselves are still blocked on task 3).",
+              "score": 0.5,
+              "matched_groups": 1,
+              "total_groups": 2,
+              "reason": "matched 1 of 2 groups"
+            },
+            {
+              "id": 4,
+              "answer": "Length-4 chain: Spec User type (1) → Implement User type (3) → Implement an endpoint (4/5/6) → Write integration tests (7) or Write API docs (8).",
+              "score": 1,
+              "matched_groups": 3,
+              "total_groups": 3,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 5,
+              "answer": "Zero — tasks 1 and 2 are already done, task 3 is assigned to worker-B, and tasks 4–8 are all still blocked.",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 6,
+              "answer": "Tasks 1 (\"Spec the User type\") and 2 (\"Spec the API endpoints\") have no blockers.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 7,
+              "answer": "Five downstream tasks would be impacted: 4, 5, 6, 7, and 8 (all endpoints, tests, and docs transitively depend on task 3).",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 8,
+              "answer": "Three workers — tasks 4, 5, and 6 are mutually independent and all become unblocked at once; tasks 7 and 8 still wait on them.",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 9,
+              "answer": "5 of 8 tasks (62.5%) are currently blocked waiting on at least one other task (4, 5, 6, 7, 8).",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 10,
+              "answer": "Tasks 4 (GET), 5 (PUT), 6 (DELETE), 7 (integration tests), and 8 (API documentation) all depend on task 3 directly or transitively.",
+              "score": 1,
+              "matched_groups": 5,
+              "total_groups": 5,
+              "reason": "all groups matched"
+            }
+          ]
+        },
+        {
+          "condition": "agent-tasks",
+          "wall_seconds": 41.009,
+          "cost_usd": 0.39664774999999997,
+          "tokens": 1766,
+          "total_score": 8.5,
+          "max_score": 10,
+          "per_question": [
+            {
+              "id": 1,
+              "answer": "Tasks 4/5/6 (GET, PUT, DELETE endpoints) are blocked on task 3 (Implement User type); tasks 7 (integration tests) and 8 (API docs) are blocked on 4, 5, and 6.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 2,
+              "answer": "Tasks 4, 5, and 6 (GET, PUT, DELETE /user/:id endpoints) would immediately become claimable.",
+              "score": 0,
+              "matched_groups": 1,
+              "total_groups": 3,
+              "reason": "matched 1 of 3 groups"
+            },
+            {
+              "id": 3,
+              "answer": "No — task 7 is blocked on tasks 4, 5, and 6, none of which are complete (and those in turn are waiting on task 3).",
+              "score": 0.5,
+              "matched_groups": 1,
+              "total_groups": 2,
+              "reason": "matched 1 of 2 groups"
+            },
+            {
+              "id": 4,
+              "answer": "The longest chain has 4 tasks: Spec User type (1) → Implement User type (3) → Implement an endpoint (4/5/6) → Write integration tests (7) [or Write API docs (8)].",
+              "score": 1,
+              "matched_groups": 3,
+              "total_groups": 3,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 5,
+              "answer": "Zero — every pending task currently has at least one unmet blocker.",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 6,
+              "answer": "Only tasks 1 (Spec the User type) and 2 (Spec the API endpoints) have no dependencies.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 7,
+              "answer": "5 downstream tasks would be impacted: 4, 5, 6, 7, and 8.",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 8,
+              "answer": "3 workers can work in parallel on the next wave — tasks 4, 5, and 6 (GET, PUT, DELETE endpoints).",
+              "score": 1,
+              "matched_groups": 1,
+              "total_groups": 1,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 9,
+              "answer": "5 out of 8 tasks (62.5%) are currently blocked — tasks 4, 5, 6, 7, and 8.",
+              "score": 1,
+              "matched_groups": 2,
+              "total_groups": 2,
+              "reason": "all groups matched"
+            },
+            {
+              "id": 10,
+              "answer": "Tasks 4 (GET), 5 (PUT), 6 (DELETE), 7 (integration tests), and 8 (API documentation).",
+              "score": 1,
+              "matched_groups": 5,
+              "total_groups": 5,
+              "reason": "all groups matched"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

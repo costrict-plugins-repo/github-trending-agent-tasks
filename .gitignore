@@ -1,0 +1,29 @@
+# --- Dependencies & build output ---------------------------------------------
+node_modules/
+dist/
+*.tgz
+*.tsbuildinfo
+
+# --- Local data & secrets ----------------------------------------------------
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.local
+
+# --- Test & coverage artifacts -----------------------------------------------
+coverage/
+test-results/
+playwright-report/
+
+# --- Worktrees ---------------------------------------------------------------
+.worktrees/
+.claude/worktrees/
+
+# --- OS / editor cruft -------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# --- Bench artifacts ---------------------------------------------------------
+bench/_results/latest.json
+

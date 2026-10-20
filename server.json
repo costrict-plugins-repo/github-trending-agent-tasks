@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.keshrath/agent-tasks",
+  "description": "Pipeline task management for AI agents - stages, dependencies, artifacts, claiming",
+  "repository": {
+    "url": "https://github.com/keshrath/agent-tasks",
+    "source": "github"
+  },
+  "version": "1.10.13",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "agent-tasks",
+      "version": "1.10.13",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
